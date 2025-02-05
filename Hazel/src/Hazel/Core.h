@@ -8,5 +8,7 @@
 	#endif
 #else
 	#error Hazel only runs on windows
-#endif 
+#endif
+
+#define BIT(x) (1 << x)
 
