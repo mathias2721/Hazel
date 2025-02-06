@@ -83,8 +83,6 @@ project "SandBox"
 	kind "ConsoleApp"
 	language "C++"
 
-	staticruntime "on"
-
 	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
 
