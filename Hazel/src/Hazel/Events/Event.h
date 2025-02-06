@@ -49,11 +49,6 @@ namespace Hazel {
 			return GetCategoryFlags() & category;
 		}
 
-		inline std::ostream& operator<<(std::ostream& os)
-		{
-			return os << this->ToString();
-		}
-
 	protected:
 		bool m_Handled = false;
 	};
@@ -80,4 +75,9 @@ namespace Hazel {
 	private:
 		Event& m_Event;
 	};
+
+	inline std::string format_as(const Event& e)
+	{
+		return e.ToString();
+	}
 }
