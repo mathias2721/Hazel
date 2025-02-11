@@ -1,5 +1,7 @@
 #include <Hazel.h>
 
+#include "imgui.h"
+
 class ExampleLayer : public Hazel::Layer
 {
 public:
@@ -16,6 +18,13 @@ public:
 	void OnEvent(Hazel::Event& event) override
 	{
 		//HZ_TRACE("{0}", event);
+	}
+
+	void OnImGuiRender() override
+	{
+		ImGui::Begin("Test");
+		ImGui::Text("Hello worlds");
+		ImGui::End();
 	}
 };
 
