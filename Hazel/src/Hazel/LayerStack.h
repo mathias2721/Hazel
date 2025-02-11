@@ -23,7 +23,7 @@ namespace Hazel {
 
 	private:
 		std::vector<Layer*> m_Layers;
-		std::vector<Layer*>::iterator m_LayerInsert;
+		std::vector<Layer*>::size_type m_LayerInsertIndex = 0;
 
 	};
 }
