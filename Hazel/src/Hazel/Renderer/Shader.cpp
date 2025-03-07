@@ -2,6 +2,8 @@
 #include "Shader.h"
 
 #include <glad/glad.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 namespace Hazel {
 	Hazel::Shader::Shader(const std::string& vertexSrc, const std::string& fragmentSrc)
@@ -115,10 +117,22 @@ namespace Hazel {
 	void Shader::Bind() const
 	{
 		glUseProgram(m_RendererID);
+
+		int u_prespective = glGetUniformLocation(m_RendererID, "u_perspective");
+		glm::mat3 mat3 = glm::mat3(1.0f);
+		mat3[2] = glm::vec3(2.f, 1.f, 1.f);
+
+		glUniformMatrix3fv(u_prespective, 1, GL_FALSE, &mat3[0][0]);
 	}
 
 	void Shader::Unbind() const
 	{
 		glUseProgram(0);
+	}
+
+	void Shader::UploadUniformMat4(const std::string& name, const glm::mat4 matrix)
+	{
+		int shader_location = glGetUniformLocation(m_RendererID, name.c_str());
+		glUniformMatrix4fv(shader_location, 1, GL_FALSE, glm::value_ptr(matrix));
 	}
 }
