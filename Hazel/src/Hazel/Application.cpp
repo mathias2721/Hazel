@@ -4,6 +4,9 @@
 #include "Hazel/Renderer/Renderer.h"
 #include "Input.h"
 
+#include <GLFW/glfw3.h>
+
+
 namespace Hazel{
 
 	#define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
@@ -157,6 +160,7 @@ namespace Hazel{
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+		dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(OnKeyArrow));
 
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin(); )
 		{
@@ -203,4 +207,16 @@ namespace Hazel{
 		return true;
 	}
 	
+	bool Application::OnKeyArrow(KeyPressedEvent& e)
+	{
+		switch (e.GetKeyCode())
+		{
+		case GLFW_KEY_LEFT:
+			m_Camera.Left();
+			return true;
+
+		}
+		return true;
+	}
+
 }

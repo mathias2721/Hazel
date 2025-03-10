@@ -117,12 +117,6 @@ namespace Hazel {
 	void Shader::Bind() const
 	{
 		glUseProgram(m_RendererID);
-
-		int u_prespective = glGetUniformLocation(m_RendererID, "u_perspective");
-		glm::mat3 mat3 = glm::mat3(1.0f);
-		mat3[2] = glm::vec3(2.f, 1.f, 1.f);
-
-		glUniformMatrix3fv(u_prespective, 1, GL_FALSE, &mat3[0][0]);
 	}
 
 	void Shader::Unbind() const

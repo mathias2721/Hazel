@@ -19,6 +19,8 @@ namespace Hazel
 		const glm::mat4& GetViewMatrix() const { return m_ViewMatrix; }
 		const glm::mat4& GetViewProjectionMatrix() const { return m_ViewProjectionMatrix; }
 
+		void Left() { SetPosition(m_Position + glm::vec3(-0.1f, 0.f, 0.f)); }
+
 	private:
 		void RecalculateViewMatrix();
 
