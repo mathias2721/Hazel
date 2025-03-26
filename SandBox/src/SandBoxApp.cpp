@@ -40,11 +40,11 @@ public:
 
 		m_SquareVA.reset(Hazel::VertexArray::Create());
 
-		float squareVertices[4 * 3] = {
-			-0.75f, -0.75f, 0.0f,
-			 0.75f, -0.75f, 0.0f,
-			 0.75f,  0.75f, 0.0f,
-			-0.75f,  0.75f, 0.0f,
+		float squareVertices[4 * 5] = {
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,
+			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,
+			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,
+			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f
 		};
 
 		Hazel::Ref<Hazel::VertexBuffer> squareVB;
@@ -52,6 +52,7 @@ public:
 		squareVB->SetLayout(
 			{
 				{Hazel::ShaderDataType::Float3, "a_Position"},
+				{Hazel::ShaderDataType::Float2, "a_TextCoord"},
 			});
 		m_SquareVA->AddVertexBuffer(squareVB);
 
@@ -131,6 +132,46 @@ public:
 		)";
 
 		m_Shader.reset(Hazel::Shader::Create(vertexSrc, fragmentSrc));
+
+		std::string TextCoordvertexSrc = R"(
+			#version 330 core
+
+			layout(location = 0) in vec3 a_Position;
+			layout(location = 1) in vec2 a_TextCoord;
+
+			uniform mat4 u_ViewProjection;
+			uniform mat4 u_Transform;
+			
+			out vec2 v_TextCoord;
+
+			void main()
+			{
+				v_TextCoord = a_TextCoord;
+				gl_Position = u_ViewProjection * u_Transform * vec4(a_Position, 1.0);
+			}
+		)";
+
+
+		std::string TextCoordfragmentSrc = R"(
+			#version 330 core
+
+			layout(location = 0) out vec4 color;
+
+			in vec2 v_TextCoord;
+
+			uniform sampler2D u_Texture;			
+
+			void main()
+			{
+				color = texture(u_Texture, v_TextCoord);
+			}
+		)";
+
+		m_TextCoord.reset(Hazel::Shader::Create(TextCoordvertexSrc, TextCoordfragmentSrc));
+
+		m_Texture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
+		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_TextCoord)->Bind();
+		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_TextCoord)->UploadUniformInt("u_Texture", 0);
 	}
 
 	void OnUpdate(Hazel::Timestep ts) override
@@ -159,8 +200,6 @@ public:
 		m_Camera.SetRotation(m_CameraRotation);
 
 
-		glm::vec4 redColor(0.8f, 0.2f, 0.3f, 1.0f);
-		glm::vec4 blueColor(0.2f, 0.2f, 0.8f, 1.0f);
 		glm::mat4 scale = glm::scale(glm::mat4(1.0f), glm::vec3(0.1f));
 
 		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_Shader2)->Bind();
@@ -174,8 +213,9 @@ public:
 			Hazel::Renderer::Submit(m_Shader2, m_SquareVA, transform);
 		}
 
-
-		Hazel::Renderer::Submit(m_Shader, m_VertexArray);
+		m_Texture->Bind();
+		Hazel::Renderer::Submit(m_TextCoord, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		//Hazel::Renderer::Submit(m_Shader, m_VertexArray);
 
 		Hazel::Renderer::EndScene();
 
@@ -210,11 +250,13 @@ public:
 	}
 
 private:
-	Hazel::Ref<Hazel::Shader> m_Shader;
+	Hazel::Ref<Hazel::Shader> m_Shader, m_TextCoord;
 	Hazel::Ref<Hazel::VertexArray> m_VertexArray;
 					
 	Hazel::Ref<Hazel::Shader> m_Shader2;
 	Hazel::Ref<Hazel::VertexArray> m_SquareVA;
+
+	Hazel::Ref<Hazel::Texture2D> m_Texture;
 
 	Hazel::OrthographicCamera m_Camera;
 	glm::vec3 m_CameraPosition;
