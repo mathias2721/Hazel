@@ -1,15 +1,20 @@
 #pragma once
 
 #include <string>
+
 #include <glm/glm.hpp>
 
 #include "Hazel/Renderer/Shader.h"
+
+// TODO remove
+typedef unsigned int GLenum;
 
 namespace Hazel {
 
 	class OpenGLShader : public Shader
 	{
 	public:
+		OpenGLShader(const std::string& path);
 		OpenGLShader(const std::string& vertexSrc, const std::string& fragmentSrc);
 		virtual ~OpenGLShader() override;
 
@@ -25,6 +30,11 @@ namespace Hazel {
 		void UploadUniformFloat2(const std::string& name, const glm::vec2& vec);
 		void UploadUniformFloat3(const std::string& name, const glm::vec3& vec);
 		void UploadUniformFloat4(const std::string& name, const glm::vec4& vec);
+
+	private:
+		std::string ReadFile(const std::string& path);
+		std::unordered_map<GLenum, std::string> PreProcess(const std::string& source);
+		void Compile(const std::unordered_map<GLenum, std::string>& shaderSources);
 
 	private:
 		uint32_t m_RendererID = 0;
