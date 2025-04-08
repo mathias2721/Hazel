@@ -94,7 +94,7 @@ public:
 			}
 		)";
 
-		m_Shader2.reset(Hazel::Shader::Create(vertexSrc2, fragmentSrc2));
+		m_Shader2 = Hazel::Shader::Create("Square", vertexSrc2, fragmentSrc2);
 
 		std::string vertexSrc = R"(
 			#version 330 core
@@ -131,16 +131,17 @@ public:
 			}
 		)";
 
-		m_Shader.reset(Hazel::Shader::Create(vertexSrc, fragmentSrc));
+		m_Shader = Hazel::Shader::Create("Triangle", vertexSrc, fragmentSrc);
 
 
-		m_TextCoord.reset(Hazel::Shader::Create("assets/shaders/Texture.glsl"));
+
+		auto textureShader = m_ShaderLibrary.Load("assets/shaders/Texture.glsl");
 
 		m_Texture = Hazel::Texture2D::Create("assets/textures/Checkerboard.png");
 		m_ChernoTexture = Hazel::Texture2D::Create("assets/textures/ChernoLogo.png");
 
-		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_TextCoord)->Bind();
-		std::dynamic_pointer_cast<Hazel::OpenGLShader>(m_TextCoord)->UploadUniformInt("u_Texture", 0);
+		std::dynamic_pointer_cast<Hazel::OpenGLShader>(textureShader)->Bind();
+		std::dynamic_pointer_cast<Hazel::OpenGLShader>(textureShader)->UploadUniformInt("u_Texture", 0);
 	}
 
 	void OnUpdate(Hazel::Timestep ts) override
@@ -181,12 +182,13 @@ public:
 
 			Hazel::Renderer::Submit(m_Shader2, m_SquareVA, transform);
 		}
+		auto textureShader = m_ShaderLibrary.Get("Texture");
 
 		m_Texture->Bind();
-		Hazel::Renderer::Submit(m_TextCoord, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		Hazel::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 
 		m_ChernoTexture->Bind();
-		Hazel::Renderer::Submit(m_TextCoord, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
+		Hazel::Renderer::Submit(textureShader, m_SquareVA, glm::scale(glm::mat4(1.0f), glm::vec3(1.5f)));
 		//Hazel::Renderer::Submit(m_Shader, m_VertexArray);
 
 		Hazel::Renderer::EndScene();
@@ -222,7 +224,8 @@ public:
 	}
 
 private:
-	Hazel::Ref<Hazel::Shader> m_Shader, m_TextCoord;
+	Hazel::ShaderLibrary m_ShaderLibrary;
+	Hazel::Ref<Hazel::Shader> m_Shader;
 	Hazel::Ref<Hazel::VertexArray> m_VertexArray;
 					
 	Hazel::Ref<Hazel::Shader> m_Shader2;
