@@ -33,13 +33,13 @@ namespace Hazel
 	void ShaderLibrary::Add(const Ref<Shader>& shader)
 	{
 		auto name = shader->GetName();
-		HZ_CORE_ASSERT(m_Shaders.find(name) != m_Shaders.end(), "Shader already exits!");
+		HZ_CORE_ASSERT(m_Shaders.find(name) == m_Shaders.end(), "Shader already exits!");
 		m_Shaders[name] = shader;
 	}
 
 	void ShaderLibrary::Add(const std::string& name, const Ref<Shader>& shader)
 	{
-		HZ_CORE_ASSERT(m_Shaders.find(name) != m_Shaders.end(), "Shader already exits!");
+		HZ_CORE_ASSERT(m_Shaders.find(name) == m_Shaders.end(), "Shader already exits!");
 		m_Shaders[name] = shader;
 	}
 
